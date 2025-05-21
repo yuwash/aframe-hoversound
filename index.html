@@ -27,12 +27,12 @@
           for(let j = 0; j < 2; j++) {
             // Calculate position
             const x = (i * cellWidth) - (cellWidth / 2);
-            const y = (j * cellHeight) - (cellHeight / 2);
+            const y = (j * cellHeight) - (cellHeight / 2) -3;
             
             // Create plane element
             const plane = document.createElement('a-plane');
-            plane.setAttribute('position', `${x} ${y} -2`);
-            plane.setAttribute('rotation', '-60 0 0');
+            plane.setAttribute('position', `${x} 0 ${y}`);
+            plane.setAttribute('rotation', '-90 0 0');
             plane.setAttribute('width', cellWidth);
             plane.setAttribute('height', cellHeight);
             plane.setAttribute('material', 'color', 'seagreen');
