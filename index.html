@@ -1,69 +1,48 @@
 <html>
   <head>
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script>
+      // This script handles the color change logic for the plane
+      AFRAME.registerComponent('cursor-listener', {
+        init: function () {
+          this.el.addEventListener('mouseenter', function (evt) {
+            this.setAttribute('material', 'color', '#9BFFC4');
+          });
+
+          this.el.addEventListener('mouseleave', function (evt) {
+            this.setAttribute('material', 'color', '#4CC3D9');
+          });
+        }
+      });
+    </script>
   </head>
   <body>
     <a-scene>
       <!-- Added camera and cursor -->
       <a-entity position="0 2.2 4">
-        <a-entity camera look-controls wasd-controls>
-          <a-entity position="0 0 -3"
-                    geometry="primitive: ring; radiusInner: 0.2; radiusOuter: 0.3;"
-                    material="color: cyan; shader: flat"
-                    cursor="maxDistance: 30; fuse: true">
-            <a-animation begin="click" easing="ease-in" attribute="scale"
-                         fill="forwards" from="0.2 0.2 0.2" to="1 1 1" dur="150"></a-animation>
-            <a-animation begin="fusing" easing="ease-in" attribute="scale"
-                         fill="backwards" from="1 1 1" to="0.2 0.2 0.2" dur="1500"></a-animation>
+        <a-entity camera look-controls>
+          <a-entity
+            cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: black; shader: flat">
           </a-entity>
         </a-entity>
       </a-entity>
 
-      <!-- Existing geometry primitives -->
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder
-        position="1 0.75 -3"
-        radius="0.5"
-        height="1.5"
-        color="#FFC65D"
-      ></a-cylinder>
-      
       <!-- Modified plane with hover effect -->
-      <a-plane
+      <a-plane cursor-listener
         position="0 0 -4"
         rotation="-90 0 0"
         width="4"
         height="4"
-        color="#7BC8A4"
+        material="color: #7BC8A4"
         class="clickable"
         hover="threshold: 0.5; on: hover"
       >
-        <a-event name="mouseenter" 
-                 value="setMaterialColor: #9BFFC4" />
-        <a-event name="mouseleave" 
-                 value="setMaterialColor: #7BC8A4" />
       </a-plane>
       
       <a-sky color="#ECECEC"></a-sky>
     </a-scene>
-
-    <!-- Added script to handle plane color change -->
-    <script>
-      // This script handles the color change logic for the plane
-      document.addEventListener('DOMContentLoaded', function() {
-        // Get the plane element
-        const plane = document.querySelector('a-plane');
-        
-        // Add hover event listeners
-        plane.addEventListener('mouseenter', function() {
-          plane.components.material.material.color.setHex('#9BFFC4');
-        });
-        
-        plane.addEventListener('mouseleave', function() {
-          plane.components.material.material.color.setHex('#7BC8A4');
-        });
-      });
-    </script>
   </body>
 </html>
