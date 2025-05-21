@@ -17,19 +17,19 @@
 
       // Create grid
       document.addEventListener('DOMContentLoaded', function() {
-        const gridWidth = 10;
+        const gridWidth = 7.5;
         const gridHeight = 5;
-        const numRows = 2;
-        const numCols = 2;
-        const cellWidth = gridWidth / numRows;
-        const cellHeight = gridHeight / numCols;
+        const numRows = 5;
+        const numCols = 5;
+        const cellWidth = gridWidth / numCols;
+        const cellHeight = gridHeight / numRows;
         
         // Create grid
-        for(let i = 0; i < numRows; i++) {
-          for(let j = 0; j < numCols; j++) {
+        for(let i = 0; i < numCols; i++) {
+          for(let j = 0; j < numRows; j++) {
             // Calculate position
-            const x = (i * cellWidth) - (cellWidth / 2);
-            const y = (j * cellHeight) - (cellHeight / 2) -3;
+            const x = (i * cellWidth) - 3;
+            const y = (j * cellHeight) - 3;
             
             // Create plane element
             const plane = document.createElement('a-plane');
@@ -49,7 +49,7 @@
   </head>
   <body>
     <a-scene>
-      <a-entity position="0 2.2 4">
+      <a-entity position="0 2 3">
         <a-entity camera look-controls>
           <a-entity
             cursor="fuse: true; fuseTimeout: 500"
