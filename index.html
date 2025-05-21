@@ -15,12 +15,14 @@
         }
       });
 
-      // Create 2x2 grid
+      // Create grid
       document.addEventListener('DOMContentLoaded', function() {
         const gridWidth = 10;
         const gridHeight = 5;
-        const cellWidth = gridWidth / 2;
-        const cellHeight = gridHeight / 2;
+        const numRows = 2;
+        const numCols = 2;
+        const cellWidth = gridWidth / numRows;
+        const cellHeight = gridHeight / numCols;
         
         // Create grid
         for(let i = 0; i < 2; i++) {
