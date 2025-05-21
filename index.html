@@ -6,11 +6,11 @@
       AFRAME.registerComponent('cursor-listener', {
         init: function () {
           this.el.addEventListener('mouseenter', function (evt) {
-            this.setAttribute('material', 'color', '#9BFFC4');
+            this.setAttribute('material', 'color', 'lightseagreen');
           });
 
           this.el.addEventListener('mouseleave', function (evt) {
-            this.setAttribute('material', 'color', '#4CC3D9');
+            this.setAttribute('material', 'color', 'seagreen');
           });
         }
       });
@@ -18,7 +18,6 @@
   </head>
   <body>
     <a-scene>
-      <!-- Added camera and cursor -->
       <a-entity position="0 2.2 4">
         <a-entity camera look-controls>
           <a-entity
@@ -30,15 +29,12 @@
         </a-entity>
       </a-entity>
 
-      <!-- Modified plane with hover effect -->
       <a-plane cursor-listener
         position="0 0 -2"
         rotation="-60 0 0"
         width="10"
         height="5"
-        material="color: #7BC8A4"
-        class="clickable"
-        hover="threshold: 0.5; on: hover"
+        material="color: seagreen"
       >
       </a-plane>
       
