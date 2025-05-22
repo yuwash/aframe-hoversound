@@ -5,7 +5,10 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('hover-sound', {
   init: function () {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const beatRateBPM = 96;
+
+    const i = this.el.dataset.gridCol;
+    const j = this.el.dataset.gridRow;
+    const beatRateBPM = 50 + (j * 25); // Varies from 50 to 150 BPM
     this.buffer = this.createBeatBuffer(beatRateBPM);
     this.bufferSource = null;
 
@@ -93,8 +96,12 @@ const createHoverSoundGrid = function() {
       plane.setAttribute('material', 'color', 'seagreen');
       plane.setAttribute('hover-sound', '');
       
+      // Add custom attributes
+      plane.dataset.gridCol = i;
+      plane.dataset.gridRow = j;
+      
       // Add to scene
       document.querySelector('a-scene').appendChild(plane);
     }
   }
-}
+};
