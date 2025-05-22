@@ -2,16 +2,46 @@
   <head>
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
     <script>
-      // This script handles the grid creation and color change logic
       AFRAME.registerComponent('cursor-listener', {
         init: function () {
-          this.el.addEventListener('mouseenter', function (evt) {
-            this.setAttribute('material', 'color', 'lightseagreen');
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          this.oscillator = null;
+
+          this.el.addEventListener('mouseenter', (evt) => {
+            this.el.setAttribute('material', 'color', 'lightseagreen');
+
+            if (this.oscillator) {
+              this.oscillator.stop();
+              this.oscillator.disconnect();
+            }
+
+            if (this.audioContext.state === 'suspended') {
+              this.audioContext.resume().then(() => {
+                this.createOscillator();
+              });
+            } else {
+              this.createOscillator();
+            }
           });
 
-          this.el.addEventListener('mouseleave', function (evt) {
-            this.setAttribute('material', 'color', 'seagreen');
+          this.el.addEventListener('mouseleave', (evt) => {
+            this.el.setAttribute('material', 'color', 'seagreen');
+
+            if (this.oscillator) {
+              this.oscillator.stop();
+              this.oscillator.disconnect();
+              this.oscillator = null;
+            }
           });
+        },
+
+        createOscillator: function () {
+          const oscillator = this.audioContext.createOscillator();
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+          oscillator.connect(this.audioContext.destination);
+          oscillator.start();
+          this.oscillator = oscillator;
         }
       });
 
