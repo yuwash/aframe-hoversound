@@ -5,7 +5,8 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('hover-sound', {
   init: function () {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.buffer = this.createBeatBuffer();
+    const beatRateBPM = 96;
+    this.buffer = this.createBeatBuffer(beatRateBPM);
     this.bufferSource = null;
 
     this.el.addEventListener('mouseenter', (evt) => {
@@ -26,11 +27,11 @@ AFRAME.registerComponent('hover-sound', {
     });
   },
 
-  createBeatBuffer: function() {
+  createBeatBuffer: function(beatRateBPM) {
     const audioContext = this.audioContext;
-    const duration = 0.625; // 96 BPM
+    const beatDuration = 60 / beatRateBPM;
     const sampleRate = audioContext.sampleRate;
-    const bufferSize = Math.round(sampleRate * duration);
+    const bufferSize = Math.round(sampleRate * beatDuration);
     const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
     const data = buffer.getChannelData(0);
 
