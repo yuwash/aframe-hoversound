@@ -36,6 +36,10 @@ AFRAME.registerComponent('hover-sound', {
   },
 
   createOscillator: function () {
+    if (this.oscillator) {
+      this.oscillator.stop();
+      this.oscillator.disconnect();
+    }
     const oscillator = this.audioContext.createOscillator();
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
