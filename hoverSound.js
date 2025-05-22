@@ -5,47 +5,66 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('hover-sound', {
   init: function () {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    this.oscillator = null;
+    this.buffer = this.createBeatBuffer();
+    this.bufferSource = null;
 
     this.el.addEventListener('mouseenter', (evt) => {
       this.el.setAttribute('material', 'color', 'lightseagreen');
 
-      if (this.oscillator) {
-        this.oscillator.stop();
-        this.oscillator.disconnect();
-      }
-
       if (this.audioContext.state === 'suspended') {
         this.audioContext.resume().then(() => {
-          this.createOscillator();
+          this.startBeat();
         });
       } else {
-        this.createOscillator();
+        this.startBeat();
       }
     });
 
     this.el.addEventListener('mouseleave', (evt) => {
       this.el.setAttribute('material', 'color', 'seagreen');
-
-      if (this.oscillator) {
-        this.oscillator.stop();
-        this.oscillator.disconnect();
-        this.oscillator = null;
-      }
+      this.stopBeat();
     });
   },
 
-  createOscillator: function () {
-    if (this.oscillator) {
-      this.oscillator.stop();
-      this.oscillator.disconnect();
+  createBeatBuffer: function() {
+    const audioContext = this.audioContext;
+    const duration = 0.625; // 96 BPM
+    const sampleRate = audioContext.sampleRate;
+    const bufferSize = Math.round(sampleRate * duration);
+    const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    const clickDuration = 0.1; // 100ms
+    const clickSamples = Math.round(sampleRate * clickDuration);
+
+    for (let i = 0; i < bufferSize; i++) {
+      if (i < clickSamples) {
+        data[i] = Math.sin(2 * Math.PI * 1000 * i / sampleRate);
+      } else {
+        data[i] = 0;
+      }
     }
-    const oscillator = this.audioContext.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
-    oscillator.connect(this.audioContext.destination);
-    oscillator.start();
-    this.oscillator = oscillator;
+    return buffer;
+  },
+
+  startBeat: function() {
+    if (this.bufferSource) {
+      this.bufferSource.stop();
+      this.bufferSource.disconnect();
+    }
+    this.bufferSource = this.audioContext.createBufferSource();
+    this.bufferSource.buffer = this.buffer;
+    this.bufferSource.loop = true;
+    this.bufferSource.connect(this.audioContext.destination);
+    this.bufferSource.start();
+  },
+
+  stopBeat: function() {
+    if (this.bufferSource) {
+      this.bufferSource.stop();
+      this.bufferSource.disconnect();
+      this.bufferSource = null;
+    }
   }
 });
 
