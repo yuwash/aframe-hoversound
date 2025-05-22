@@ -9,7 +9,8 @@ AFRAME.registerComponent('hover-sound', {
     const i = this.el.dataset.gridCol;
     const j = this.el.dataset.gridRow;
     const beatRateBPM = 50 + (j * 25); // Varies from 50 to 150 BPM
-    this.buffer = this.createBeatBuffer(beatRateBPM);
+    const soundFrequency = 500 + (i * 250); // Varies from 500 to 1500 Hz
+    this.buffer = this.createBeatBuffer(beatRateBPM, soundFrequency);
     this.bufferSource = null;
 
     this.el.addEventListener('mouseenter', (evt) => {
@@ -30,7 +31,7 @@ AFRAME.registerComponent('hover-sound', {
     });
   },
 
-  createBeatBuffer: function(beatRateBPM) {
+  createBeatBuffer: function(beatRateBPM, soundFrequency) {
     const audioContext = this.audioContext;
     const beatDuration = 60 / beatRateBPM;
     const sampleRate = audioContext.sampleRate;
@@ -43,7 +44,7 @@ AFRAME.registerComponent('hover-sound', {
 
     for (let i = 0; i < bufferSize; i++) {
       if (i < clickSamples) {
-        data[i] = Math.sin(2 * Math.PI * 1000 * i / sampleRate);
+        data[i] = Math.sin(2 * Math.PI * soundFrequency * i / sampleRate);
       } else {
         data[i] = 0;
       }
