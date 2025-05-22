@@ -5,35 +5,34 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('hover-sound', {
   schema: {
     i: {type: 'number'},
-    j: {type: 'number'}
+    j: {type: 'number'},
+    beatSource: {},  // Shared object, no serialization possible.
   },
   init: function () {
-    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
     const beatRateBPM = 50 + (this.data.j * 25); // Varies from 50 to 150 BPM
     const soundFrequency = 500 + (this.data.i * 250); // Varies from 500 to 1500 Hz
-    this.buffer = this.createBeatBuffer(beatRateBPM, soundFrequency);
-    this.bufferSource = null;
+    const beatSource = this.data.beatSource;
+    const buffer = beatSource.createBeatBuffer(beatRateBPM, soundFrequency);
 
     this.el.addEventListener('mouseenter', (evt) => {
       this.el.setAttribute('material', 'color', 'lightseagreen');
-
-      if (this.audioContext.state === 'suspended') {
-        this.audioContext.resume().then(() => {
-          this.startBeat();
-        });
-      } else {
-        this.startBeat();
-      }
+      beatSource.resumeBeat(buffer);
     });
 
     this.el.addEventListener('mouseleave', (evt) => {
       this.el.setAttribute('material', 'color', 'seagreen');
-      this.stopBeat();
+      beatSource.stopBeat();
     });
-  },
+  }
+});
 
-  createBeatBuffer: function(beatRateBPM, soundFrequency) {
+class BeatSource {
+  constructor() {
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    this.bufferSource = null;
+  }
+
+  createBeatBuffer(beatRateBPM, soundFrequency) {
     const audioContext = this.audioContext;
     const beatDuration = 60 / beatRateBPM;
     const sampleRate = audioContext.sampleRate;
@@ -52,28 +51,38 @@ AFRAME.registerComponent('hover-sound', {
       }
     }
     return buffer;
-  },
+  }
 
-  startBeat: function() {
+  startBeat(buffer) {
     if (this.bufferSource) {
       this.bufferSource.stop();
       this.bufferSource.disconnect();
     }
     this.bufferSource = this.audioContext.createBufferSource();
-    this.bufferSource.buffer = this.buffer;
+    this.bufferSource.buffer = buffer;
     this.bufferSource.loop = true;
     this.bufferSource.connect(this.audioContext.destination);
     this.bufferSource.start();
-  },
+  }
 
-  stopBeat: function() {
+  resumeBeat(buffer){
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume().then(() => {
+        this.startBeat(buffer);
+      });
+    } else {
+      this.startBeat(buffer);
+    }
+  }
+
+  stopBeat() {
     if (this.bufferSource) {
       this.bufferSource.stop();
       this.bufferSource.disconnect();
       this.bufferSource = null;
     }
   }
-});
+}
 
 const createHoverSoundGrid = function() {
   const gridWidth = 7.5;
@@ -82,6 +91,7 @@ const createHoverSoundGrid = function() {
   const numCols = 5;
   const cellWidth = gridWidth / numCols;
   const cellHeight = gridHeight / numRows;
+  const beatSource = new BeatSource();
   
   // Create grid
   for(let i = 0; i < numCols; i++) {
@@ -101,7 +111,7 @@ const createHoverSoundGrid = function() {
       
       // Add custom attributes
       // Attach hover-sound mixin
-      const hoverSoundData = {i, j}
+      const hoverSoundData = {i, j, beatSource};
       plane.setAttribute('hover-sound', hoverSoundData);
       
       // Add to scene
